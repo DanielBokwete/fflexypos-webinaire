@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription Webinaire | FflexyPOS</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- L'en-tête bleu foncé -->
+    <header class="hero-section">
+        <div class="logo-area">
+            <span class="logo-text-yellow">Fflexy</span><span class="logo-text-white">POS™</span>
+            <p class="logo-subtitle">FacileApp - Groupe ELAKO</p>
+        </div>
+        <h1>Optimisez vos ventes avec FflexyPOS, votre terminal de Gestion avec logiciel intégré</h1>
+    </header>
+
+    <!-- Le conteneur principal du formulaire -->
+    <main class="container">
+        <h2>Formulaire d'Inscription à la session FflexyPOS</h2>
+
+        <!-- L'encadré doré avec les informations de la session -->
+        <div class="session-info">
+            <p>📅 <strong>Samedi 11 Juillet 2026</strong></p>
+            <p>🕒 <strong>11h00 - 13h00</strong></p>
+            <p>📡 <strong class="text-gold">Session gratuite</strong></p>
+        </div>
+
+        <!-- Le Formulaire -->
+        <form action="#" method="POST">
+            
+            <div class="form-group">
+                <label for="prenom">PRÉNOM <span class="required">*</span></label>
+                <input type="text" id="prenom" name="prenom" required placeholder="Votre prénom">
+            </div>
+
+            <div class="form-group">
+                <label for="nom">NOM <span class="required">*</span></label>
+                <input type="text" id="nom" name="nom" required placeholder="Votre nom">
+            </div>
+
+            <div class="form-group">
+                <label for="email">ADRESSE E-MAIL <span class="required">*</span></label>
+                <input type="email" id="email" name="email" required placeholder="Votre adresse e-mail">
+            </div>
+
+            <div class="form-group">
+                <label for="telephone">NUMÉRO DE TÉLÉPHONE <span class="required">*</span></label>
+                <div class="phone-input-group">
+                    <select class="country-code" name="indicatif">
+                        <option value="+243">🇨🇩 +243</option>
+                        <option value="+243">🇨🇩 +242</option>
+                        <option value="+243">🇨🇩 +224</option>
+                        <option value="+243">🇨🇩 +245</option>
+                        <option value="+243">🇨🇩 +225</option>
+                        <option value="+243">🇨🇩 +221</option>
+                        <option value="+243">🇨🇩 +236</option>
+                        <option value="+243">🇨🇩 +237</option>
+                        <option value="+33">🇫🇷 +33</option>
+                        <option value="+1">🇺🇸 +1</option>
+                    </select>
+                    <input type="tel" id="telephone" name="telephone" required placeholder="Votre numéro de téléphone">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="pays">PAYS <span class="required">*</span></label>
+                <select id="pays" name="pays" required>
+                    <option value="Congo-Kinshasa">Congo-Kinshasa</option>
+                    <option value="Congo-Brazzaville">Congo-Brazzaville</option>
+                    <option value="Autre">Autre</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="ville">VILLE <span class="required">*</span></label>
+                <input type="text" id="ville" name="ville" required placeholder="Préciser la ville de résidence">
+            </div>
+
+            <div class="form-group">
+                <label class="radio-label">Êtes-vous propriétaire ou gérant d'une boutique, restaurant, pharmacie, école, hôpital ou autres activités ?</label>
+                <div class="radio-group">
+                    <label class="radio-option"><input type="radio" name="proprietaire" value="oui" required> OUI</label>
+                    <label class="radio-option"><input type="radio" name="proprietaire" value="non"> NON</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="attente">QUESTION OU ATTENTE POUR LA SESSION</label>
+                <textarea id="attente" name="attente" rows="4" placeholder="Qu'espérez-vous apprendre lors de cette session ?"></textarea>
+            </div>
+
+            </div>
+
+            <button type="submit" class="btn-submit">Confirmer mon inscription</button>
+        </form>
+    </main>
+
+</body>
+</html>
