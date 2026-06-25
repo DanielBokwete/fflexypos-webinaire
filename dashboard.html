@@ -1,99 +1,30 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Espace Admin | FflexyPOS</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .admin-box {
-            background: white;
-            padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-            margin-bottom: 25px;
-            text-align: left;
-        }
-
-        .flex-group {
-            display: flex;
-            gap: 15px;
-            margin-top: 10px;
-        }
-
-        .flex-group input {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        .flex-group button {
-            width: auto;
-            margin: 0;
-            background-color: #0A192F;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .table-responsive {
-            overflow-x: auto;
-            margin-top: 20px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            font-size: 14px;
-        }
-
-        th,
-        td {
-            padding: 12px;
-            border: 1px solid #cbd5e1;
-            text-align: left;
-        }
-
-        th {
-            background-color: #0A192F;
-            color: white;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f8f9fa;
-        }
-
-        .btn-wa {
-            background-color: #25D366;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 4px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 12px;
-            display: inline-block;
-        }
-
-        .badge {
-            background: #e2e8f0;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .badge.oui {
-            background: #dcfce7;
-            color: #15803d;
-        }
+        .admin-box { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; text-align: left; }
+        .flex-group { display: flex; gap: 15px; margin-top: 10px; flex-wrap: wrap; }
+        .flex-group input { flex: 1; min-width: 200px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+        .flex-group button { background-color: #0A192F; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; white-space: nowrap; }
+        
+        /* Style pour le filtre des dates */
+        .filter-bar { background-color: #f1f5f9; padding: 15px; border-radius: 6px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .filter-bar select { padding: 8px; border-radius: 5px; border: 1px solid #cbd5e1; max-width: 300px; }
+        
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; background: white; font-size: 14px; }
+        th, td { padding: 12px; border: 1px solid #cbd5e1; text-align: left; }
+        th { background-color: #0A192F; color: white; }
+        tr:nth-child(even) { background-color: #f8f9fa; }
+        .btn-wa { background-color: #25D366; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-weight: bold; font-size: 12px; }
+        .badge { background: #e2e8f0; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+        .badge.oui { background: #dcfce7; color: #15803d; }
     </style>
 </head>
-
 <body style="display: block; padding: 20px;">
 
     <header class="hero-section" style="max-width: 1000px; margin: 0 auto 30px auto; border-radius: 8px;">
@@ -104,37 +35,42 @@
     </header>
 
     <main style="max-width: 1000px; margin: 0 auto;">
-
+        
         <div class="admin-box">
-            <h3>Configuration de la Session</h3>
-            <p>Date actuellement affichée sur le formulaire : <strong id="current-date"
-                    class="text-gold">Chargement...</strong></p>
+            <h3>Configuration de la Session Publique</h3>
+            <p>Affiché actuellement : <strong id="current-date" class="text-gold">...</strong> à <strong id="current-time" class="text-gold">...</strong></p>
             <div class="flex-group">
-                <input type="text" id="new-date-input" placeholder="Ex: Samedi 11 Juillet 2026">
-                <button id="update-date-btn" onclick="updateWebinaireDate()">Mettre à jour la date</button>
+                <input type="text" id="new-date-input" placeholder="Nouvelle Date (ex: Samedi 25 Juillet)">
+                <input type="text" id="new-time-input" placeholder="Nouvelle Heure (ex: 14h00 - 16h00)">
+                <button id="update-btn" onclick="updateSession()">Mettre à jour le site</button>
             </div>
         </div>
 
         <div class="admin-box">
             <h3>Liste des Inscrits (<span id="count">0</span>)</h3>
+            
+            <div class="filter-bar">
+                <strong>Filtrer par session :</strong>
+                <select id="date-filter" onchange="renderTable()">
+                    <option value="ALL">Afficher toutes les sessions</option>
+                </select>
+            </div>
+
             <div class="table-responsive">
                 <table>
                     <thead>
                         <tr>
-                            <th>Date Inscription</th>
+                            <th>Session</th>
                             <th>Participant</th>
                             <th>Email</th>
                             <th>Téléphone</th>
                             <th>Ville</th>
-                            <th>Proprio/Gérant ?</th>
-                            <th>Attentes</th>
+                            <th>Proprio ?</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody id="inscrits-table-body">
-                        <tr>
-                            <td colspan="8" style="text-align: center;">Chargement des données...</td>
-                        </tr>
+                        <tr><td colspan="7" style="text-align: center;">Chargement...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -143,81 +79,100 @@
 
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzxsk3img6EXrjdKR2vJ6V-l79239piW7uEba4_ScZn5thuWSKg_bkLN9uALavgcVqfmA/exec";
+        let toutesLesInscriptions = []; // On stocke tout ici pour le filtre
 
         function loadDashboardData() {
             fetch(`${SCRIPT_URL}?action=getInscrits`)
                 .then(res => res.json())
                 .then(data => {
-                    if (data.error) {
-                        alert("Erreur dans Google Sheets: " + data.error);
-                        return;
-                    }
+                    if(data.error) return alert("Erreur: " + data.error);
+                    
                     document.getElementById('current-date').innerText = data.date;
-                    const tbody = document.getElementById('inscrits-table-body');
-                    document.getElementById('count').innerText = data.inscrits.length;
-
-                    if (data.inscrits.length === 0) {
-                        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">Aucun inscrit pour cette session pour le moment.</td></tr>`;
-                        return;
-                    }
-
-                    tbody.innerHTML = "";
-                    data.inscrits.forEach(user => {
-                        let cleanPhone = user.telephone.replace(/[^0-9]/g, '');
-                        let row = `<tr>
-                            <td>${user.dateInsc}</td>
-                            <td><strong>${user.prenom} ${user.nom}</strong></td>
-                            <td>${user.email}</td>
-                            <td>${user.telephone}</td>
-                            <td>${user.ville}</td>
-                            <td><span class="badge ${user.proprietaire}">${user.proprietaire.toUpperCase()}</span></td>
-                            <td>${user.attentes || '-'}</td>
-                            <td><a href="https://wa.me/${cleanPhone}" target="_blank" class="btn-wa">📱 Relancer</a></td>
-                        </tr>`;
-                        tbody.innerHTML += row;
-                    });
-                })
-                .catch(err => {
-                    document.getElementById('inscrits-table-body').innerHTML = `<tr><td colspan="8" style="text-align:center; color:red;">Impossible de contacter Google Sheets. Vérifiez l'URL de l'API.</td></tr>`;
+                    document.getElementById('current-time').innerText = data.time;
+                    
+                    toutesLesInscriptions = data.inscrits || [];
+                    populateFilterDropdown(); // Remplir la liste déroulante
+                    renderTable(); // Afficher le tableau
                 });
         }
 
-        function updateWebinaireDate() {
-            const newDate = document.getElementById('new-date-input').value.trim();
-            if (!newDate) return alert("Veuillez écrire une date !");
+        function populateFilterDropdown() {
+            const filter = document.getElementById('date-filter');
+            // Récupérer les dates uniques
+            const uniqueDates = [...new Set(toutesLesInscriptions.map(item => item.sessionDate))];
+            
+            // On garde l'option "ALL" et on ajoute les dates existantes
+            filter.innerHTML = '<option value="ALL">Afficher toutes les sessions</option>';
+            uniqueDates.forEach(date => {
+                if(date) filter.innerHTML += `<option value="${date}">${date}</option>`;
+            });
+            
+            // On sélectionne par défaut la date actuelle pour éviter une liste trop longue
+            const currentDate = document.getElementById('current-date').innerText;
+            if(uniqueDates.includes(currentDate)) {
+                filter.value = currentDate;
+            }
+        }
 
-            const btn = document.getElementById('update-date-btn');
-            btn.disabled = true;
-            btn.innerText = "Mise à jour...";
+        function renderTable() {
+            const tbody = document.getElementById('inscrits-table-body');
+            const selectedDate = document.getElementById('date-filter').value;
+            
+            // Filtrer les inscriptions
+            const filteredData = selectedDate === "ALL" 
+                ? toutesLesInscriptions 
+                : toutesLesInscriptions.filter(item => item.sessionDate === selectedDate);
+                
+            document.getElementById('count').innerText = filteredData.length;
+            
+            if(filteredData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">Aucun inscrit pour ce filtre.</td></tr>`;
+                return;
+            }
+            
+            tbody.innerHTML = "";
+            filteredData.forEach(user => {
+                let cleanPhone = user.telephone.replace(/[^0-9]/g, '');
+                tbody.innerHTML += `<tr>
+                    <td><small>${user.sessionDate}</small></td>
+                    <td><strong>${user.prenom} ${user.nom}</strong></td>
+                    <td>${user.email}</td>
+                    <td>${user.telephone}</td>
+                    <td>${user.ville}</td>
+                    <td><span class="badge ${user.proprietaire}">${user.proprietaire.toUpperCase()}</span></td>
+                    <td><a href="https://wa.me/${cleanPhone}" target="_blank" class="btn-wa">📱 Relancer</a></td>
+                </tr>`;
+            });
+        }
+
+        function updateSession() {
+            const newDate = document.getElementById('new-date-input').value.trim();
+            const newTime = document.getElementById('new-time-input').value.trim();
+            
+            if(!newDate && !newTime) return alert("Remplissez au moins un champ pour mettre à jour !");
+            
+            const btn = document.getElementById('update-btn');
+            btn.disabled = true; btn.innerText = "Mise à jour...";
 
             const formData = new URLSearchParams();
-            formData.append("action", "updateDate");
-            formData.append("nouvelleDate", newDate);
+            formData.append("action", "updateSession");
+            if(newDate) formData.append("nouvelleDate", newDate);
+            if(newTime) formData.append("nouvelleHeure", newTime);
 
-            fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: formData.toString(),
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            fetch(SCRIPT_URL, { method: 'POST', body: formData.toString(), headers: { 'Content-Type': 'application/x-www-form-urlencoded' }})
+            .then(res => res.json())
+            .then(data => {
+                if(data.result === "success") {
+                    alert("Site public mis à jour !");
+                    document.getElementById('new-date-input').value = "";
+                    document.getElementById('new-time-input').value = "";
+                    loadDashboardData();
+                }
             })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.result === "success") {
-                        alert("Date mise à jour !");
-                        document.getElementById('new-date-input').value = "";
-                        loadDashboardData();
-                    } else {
-                        alert("Erreur: " + data.error);
-                    }
-                })
-                .catch(() => alert("Erreur de connexion internet"))
-                .finally(() => {
-                    btn.disabled = false;
-                    btn.innerText = "Mettre à jour la date";
-                });
+            .finally(() => { btn.disabled = false; btn.innerText = "Mettre à jour le site"; });
         }
 
         window.addEventListener('DOMContentLoaded', loadDashboardData);
     </script>
 </body>
-
 </html>

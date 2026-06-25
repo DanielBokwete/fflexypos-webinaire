@@ -1,15 +1,12 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscription Webinaire | FflexyPOS</title>
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-
     <header class="hero-section">
         <div class="logo-area">
             <span class="logo-text-yellow">Fflexy</span><span class="logo-text-white">POS™</span>
@@ -22,28 +19,24 @@
         <h2>Formulaire d'Inscription à la session FflexyPOS</h2>
 
         <div class="session-info">
-            <p>📅 <strong id="webinaire-date">Chargement de la date...</strong></p>
-            <p>🕒 <strong>11h00 - 13h00</strong></p>
+            <p>📅 <strong id="webinaire-date">Chargement...</strong></p>
+            <p>🕒 <strong id="webinaire-time">Chargement...</strong></p>
             <p>📡 <strong class="text-gold">Session gratuite</strong></p>
         </div>
 
         <form id="registration-form" method="POST">
-
             <div class="form-group">
                 <label for="prenom">PRÉNOM <span class="required">*</span></label>
                 <input type="text" id="prenom" name="prenom" required placeholder="Votre prénom">
             </div>
-
             <div class="form-group">
                 <label for="nom">NOM <span class="required">*</span></label>
                 <input type="text" id="nom" name="nom" required placeholder="Votre nom">
             </div>
-
             <div class="form-group">
                 <label for="email">ADRESSE E-MAIL <span class="required">*</span></label>
                 <input type="email" id="email" name="email" required placeholder="Votre adresse e-mail">
             </div>
-
             <div class="form-group">
                 <label for="telephone">NUMÉRO DE TÉLÉPHONE <span class="required">*</span></label>
                 <div class="phone-input-group">
@@ -62,7 +55,6 @@
                     <input type="tel" id="telephone" name="telephone" required placeholder="Votre numéro de téléphone">
                 </div>
             </div>
-
             <div class="form-group">
                 <label for="pays">PAYS <span class="required">*</span></label>
                 <select id="pays" name="pays" required>
@@ -71,7 +63,6 @@
                     <option value="Autre">Autre</option>
                 </select>
             </div>
-
             <div class="form-group">
                 <label for="ville">VILLE <span class="required">*</span></label>
                 <select id="ville" name="ville" required>
@@ -81,21 +72,16 @@
                     <option value="Kolwezi">Kolwezi</option>
                 </select>
             </div>
-
             <div class="form-group">
-                <label class="radio-label">Êtes-vous propriétaire ou gérant d'une boutique, restaurant, pharmacie,
-                    école, hôpital ou autres activités ?</label>
+                <label class="radio-label">Êtes-vous propriétaire ou gérant d'une activité ?</label>
                 <div class="radio-group">
-                    <label class="radio-option"><input type="radio" name="proprietaire" value="oui" required>
-                        OUI</label>
+                    <label class="radio-option"><input type="radio" name="proprietaire" value="oui" required> OUI</label>
                     <label class="radio-option"><input type="radio" name="proprietaire" value="non"> NON</label>
                 </div>
             </div>
-
             <div class="form-group">
                 <label for="attente">QUESTION OU ATTENTE POUR LA SESSION</label>
-                <textarea id="attente" name="attente" rows="4"
-                    placeholder="Qu'espérez-vous apprendre lors de cette session ?"></textarea>
+                <textarea id="attente" name="attente" rows="4" placeholder="Qu'espérez-vous apprendre lors de cette session ?"></textarea>
             </div>
 
             <button type="submit" class="btn-submit" id="submit-btn">Confirmer mon inscription</button>
@@ -105,62 +91,48 @@
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzxsk3img6EXrjdKR2vJ6V-l79239piW7uEba4_ScZn5thuWSKg_bkLN9uALavgcVqfmA/exec";
 
-        // 1. Récupérer automatiquement la date depuis le Google Sheet au chargement
         window.addEventListener('DOMContentLoaded', () => {
             fetch(SCRIPT_URL)
                 .then(response => response.json())
                 .then(data => {
                     if (data && data.date) {
                         document.getElementById('webinaire-date').innerText = data.date;
-                    } else {
-                        document.getElementById('webinaire-date').innerText = "Prochainement";
+                        document.getElementById('webinaire-time').innerText = data.time || "11h00 - 13h00";
                     }
                 })
-                .catch(error => {
-                    console.error("Erreur de chargement de la date:", error);
-                    document.getElementById('webinaire-date').innerText = "Prochainement";
-                });
+                .catch(err => console.error(err));
         });
 
-        // 2. Envoyer les données du formulaire vers le Google Sheet à la soumission
         const form = document.getElementById('registration-form');
         const submitBtn = document.getElementById('submit-btn');
 
         form.addEventListener('submit', e => {
             e.preventDefault();
-
             submitBtn.disabled = true;
             submitBtn.innerText = "Inscription en cours...";
 
-            const formData = new FormData(form);
-            const urlEncodedData = new URLSearchParams(formData).toString();
+            const urlEncodedData = new URLSearchParams(new FormData(form)).toString();
 
             fetch(SCRIPT_URL, {
                 method: 'POST',
                 body: urlEncodedData,
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.result === 'success') {
+                    alert('Félicitations ! Votre inscription a bien été prise en compte.');
+                    form.reset();
+                } else {
+                    alert('Erreur lors de l\'inscription.');
                 }
             })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.result === 'success') {
-                        alert('Félicitations ! Votre inscription a bien été prise en compte.');
-                        form.reset();
-                    } else {
-                        alert('Une erreur est survenue lors de l\'inscription. Veuillez réessayer.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Erreur lors de l\'envoi:', error);
-                    alert('Une erreur de connexion est survenue. Veuillez réessayer.');
-                })
-                .finally(() => {
-                    submitBtn.disabled = false;
-                    submitBtn.innerText = "Confirmer mon inscription";
-                });
+            .catch(() => alert('Erreur de connexion.'))
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Confirmer mon inscription";
+            });
         });
     </script>
 </body>
-
 </html>
