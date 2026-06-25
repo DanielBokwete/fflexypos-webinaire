@@ -20,7 +20,7 @@
         th, td { padding: 12px; border: 1px solid #cbd5e1; text-align: left; }
         th { background-color: #0A192F; color: white; }
         tr:nth-child(even) { background-color: #f8f9fa; }
-        .btn-wa { background-color: #25D366; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-weight: bold; font-size: 12px; }
+        .btn-wa { background-color: #25D366; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-weight: bold; font-size: 12px; display: inline-block; }
         .badge { background: #e2e8f0; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; }
         .badge.oui { background: #dcfce7; color: #15803d; }
     </style>
@@ -49,6 +49,7 @@
         <div class="admin-box">
             <h3>Liste des Inscrits (<span id="count">0</span>)</h3>
             
+            <!-- Barre de filtre -->
             <div class="filter-bar">
                 <strong>Filtrer par session :</strong>
                 <select id="date-filter" onchange="renderTable()">
@@ -66,11 +67,12 @@
                             <th>Téléphone</th>
                             <th>Ville</th>
                             <th>Proprio ?</th>
+                            <th>Attentes</th> <!-- La colonne est bien de retour ici -->
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody id="inscrits-table-body">
-                        <tr><td colspan="7" style="text-align: center;">Chargement...</td></tr>
+                        <tr><td colspan="8" style="text-align: center;">Chargement...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -78,8 +80,8 @@
     </main>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyiYGVEssyPbl6Rnb79p8LbZQFTzu_fRohyFika4riIfbMS2ppXMaYixWorhLvanwDfvQ/exec";
-        let toutesLesInscriptions = []; // On stocke tout ici pour le filtre
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzxsk3img6EXrjdKR2vJ6V-l79239piW7uEba4_ScZn5thuWSKg_bkLN9uALavgcVqfmA/exec";
+        let toutesLesInscriptions = []; 
 
         function loadDashboardData() {
             fetch(`${SCRIPT_URL}?action=getInscrits`)
@@ -91,23 +93,21 @@
                     document.getElementById('current-time').innerText = data.time;
                     
                     toutesLesInscriptions = data.inscrits || [];
-                    populateFilterDropdown(); // Remplir la liste déroulante
-                    renderTable(); // Afficher le tableau
+                    populateFilterDropdown(); 
+                    renderTable(); 
                 });
         }
 
         function populateFilterDropdown() {
             const filter = document.getElementById('date-filter');
-            // Récupérer les dates uniques
+            // Sécurité ".filter(Boolean)" ajoutée ici pour ignorer les lignes vides
             const uniqueDates = [...new Set(toutesLesInscriptions.map(item => item.sessionDate).filter(Boolean))];
             
-            // On garde l'option "ALL" et on ajoute les dates existantes
             filter.innerHTML = '<option value="ALL">Afficher toutes les sessions</option>';
             uniqueDates.forEach(date => {
                 if(date) filter.innerHTML += `<option value="${date}">${date}</option>`;
             });
             
-            // On sélectionne par défaut la date actuelle pour éviter une liste trop longue
             const currentDate = document.getElementById('current-date').innerText;
             if(uniqueDates.includes(currentDate)) {
                 filter.value = currentDate;
@@ -118,7 +118,6 @@
             const tbody = document.getElementById('inscrits-table-body');
             const selectedDate = document.getElementById('date-filter').value;
             
-            // Filtrer les inscriptions
             const filteredData = selectedDate === "ALL" 
                 ? toutesLesInscriptions 
                 : toutesLesInscriptions.filter(item => item.sessionDate === selectedDate);
@@ -126,13 +125,14 @@
             document.getElementById('count').innerText = filteredData.length;
             
             if(filteredData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">Aucun inscrit pour ce filtre.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">Aucun inscrit pour ce filtre.</td></tr>`;
                 return;
             }
             
             tbody.innerHTML = "";
             filteredData.forEach(user => {
                 let cleanPhone = user.telephone.replace(/[^0-9]/g, '');
+                // La donnée des attentes s'affiche maintenant parfaitement ici :
                 tbody.innerHTML += `<tr>
                     <td><small>${user.sessionDate}</small></td>
                     <td><strong>${user.prenom} ${user.nom}</strong></td>
@@ -140,6 +140,7 @@
                     <td>${user.telephone}</td>
                     <td>${user.ville}</td>
                     <td><span class="badge ${user.proprietaire}">${user.proprietaire.toUpperCase()}</span></td>
+                    <td>${user.attentes || '-'}</td>
                     <td><a href="https://wa.me/${cleanPhone}" target="_blank" class="btn-wa">📱 Relancer</a></td>
                 </tr>`;
             });
