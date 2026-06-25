@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace Admin | FflexyPOS</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Styles spécifiques pour le tableau de bord */
+        .admin-box {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .flex-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .flex-group input {
+            flex: 1;
+        }
+
+        .flex-group button {
+            width: auto;
+            margin: 0;
+            background-color: #0A192F;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            font-size: 14px;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            text-align: left;
+        }
+
+        th {
+            background-color: #0A192F;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .btn-wa {
+            background-color: #25D366;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 12px;
+            display: inline-block;
+        }
+
+        .badge {
+            background: #e2e8f0;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .badge.oui {
+            background: #dcfce7;
+            color: #15803d;
+        }
+    </style>
+</head>
+
+<body style="display: block; padding: 20px;">
+
+    <header class="hero-section" style="max-width: 1000px; margin: 0 auto 30px auto; border-radius: 8px;">
+        <div class="logo-area">
+            <span class="logo-text-yellow">Fflexy</span><span class="logo-text-white">POS™ Dashboard</span>
+            <p class="logo-subtitle">Espace Privé de Gestion des Webinaires</p>
+        </div>
+    </header>
+
+    <main style="max-width: 1000px; margin: 0 auto;">
+
+        <div class="admin-box">
+            <h3>Configuration de la Session</h3>
+            <p>Date actuellement affichée sur le formulaire : <strong id="current-date"
+                    class="text-gold">Chargement...</strong></p>
+            <div class="flex-group">
+                <input type="text" id="new-date-input" placeholder="Ex: Samedi 11 Juillet 2026">
+                <button class="btn-submit" id="update-date-btn" onclick="updateWebinaireDate()">Mettre à jour la
+                    date</button>
+            </div>
+        </div>
+
+        <div class="admin-box">
+            <h3>Liste des Inscrits (<span id="count">0</span>)</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date Inscription</th>
+                            <th>Participant</th>
+                            <th>Email</th>
+                            <th>Téléphone</th>
+                            <th>Ville</th>
+                            <th>Proprio/Gérant ?</th>
+                            <th>Attentes</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inscrits-table-body">
+                        <tr>
+                            <td colspan="8" style="text-align: center;">Chargement des données...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz8p2VCeVwb_V4VZL0imMw7nJ6SsgZEeM2_gGiO6AuCbqti18Z1ma8-He2z_j4kP5g16g/exec";
+
+        // Charger la date active et la liste des inscrits
+        function loadDashboardData() {
+            fetch(`${SCRIPT_URL}?action=getInscrits`)
+                .then(res => res.json())
+                .then(data => {
+                    // 1. Affiche la date en cours
+                    document.getElementById('current-date').innerText = data.date;
+
+                    // 2. Remplit le tableau des inscrits
+                    const tbody = document.getElementById('inscrits-table-body');
+                    document.getElementById('count').innerText = data.inscrits.length;
+
+                    if (data.inscrits.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">Aucun inscrit pour cette session pour le moment.</td></tr>`;
+                        return;
+                    }
+
+                    tbody.innerHTML = "";
+                    data.inscrits.forEach(user => {
+                        // Nettoyage du numéro pour faire un lien WhatsApp propre
+                        let cleanPhone = user.telephone.replace(/[^0-9]/g, '');
+
+                        let row = `<tr>
+                            <td>${user.dateInsc}</td>
+                            <td><strong>${user.prenom} ${user.nom}</strong></td>
+                            <td>${user.email}</td>
+                            <td>${user.telephone}</td>
+                            <td>${user.ville}</td>
+                            <td><span class="badge ${user.proprietaire}">${user.proprietaire.toUpperCase()}</span></td>
+                            <td>${user.attentes || '-'}</td>
+                            <td><a href="https://wa.me/${cleanPhone}" target="_blank" class="btn-wa">📱 Relancer</a></td>
+                        </tr>`;
+                        tbody.innerHTML += row;
+                    });
+                })
+                .catch(err => {
+                    console.error("Erreur:", err);
+                    document.getElementById('inscrits-table-body').innerHTML = `<tr><td colspan="8" style="text-align:center; color:red;">Erreur lors du chargement des données.</td></tr>`;
+                });
+        }
+
+        // Fonction pour modifier la date dans la base de données
+        function updateWebinaireDate() {
+            const newDate = document.getElementById('new-date-input').value.trim();
+            if (!newDate) { alert("Veuillez écrire une date !"); return; }
+
+            const btn = document.getElementById('update-date-btn');
+            btn.disabled = true;
+            btn.innerText = "Mise à jour...";
+
+            fetch(`${SCRIPT_URL}?action=updateDate&nouvelleDate=${encodeURIComponent(newDate)}`, { method: 'POST' })
+                .then(() => {
+                    alert("La date a été mise à jour avec succès !");
+                    document.getElementById('new-date-input').value = "";
+                    loadDashboardData(); // Recharge le tableau
+                })
+                .catch(err => alert("Erreur lors de la modification"))
+                .finally(() => {
+                    btn.disabled = false;
+                    btn.innerText = "Mettre à jour la date";
+                });
+        }
+
+        // Charger les données dès que la page s'ouvre
+        window.addEventListener('DOMContentLoaded', loadDashboardData);
+    </script>
+</body>
+
+</html>
