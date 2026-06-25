@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscription Webinaire | FflexyPOS</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-    <!-- L'en-tête bleu foncé -->
     <header class="hero-section">
         <div class="logo-area">
             <span class="logo-text-yellow">Fflexy</span><span class="logo-text-white">POS™</span>
@@ -17,20 +18,17 @@
         <h1>Optimisez vos ventes avec FflexyPOS, votre terminal de Gestion avec logiciel intégré</h1>
     </header>
 
-    <!-- Le conteneur principal du formulaire -->
     <main class="container">
         <h2>Formulaire d'Inscription à la session FflexyPOS</h2>
 
-        <!-- L'encadré doré avec les informations de la session -->
         <div class="session-info">
-            <p>📅 <strong>Samedi 11 Juillet 2026</strong></p>
+            <p>📅 <strong id="webinaire-date">Chargement de la date...</strong></p>
             <p>🕒 <strong>11h00 - 13h00</strong></p>
             <p>📡 <strong class="text-gold">Session gratuite</strong></p>
         </div>
 
-        <!-- Le Formulaire -->
-        <form action="#" method="POST">
-            
+        <form id="registration-form" method="POST">
+
             <div class="form-group">
                 <label for="prenom">PRÉNOM <span class="required">*</span></label>
                 <input type="text" id="prenom" name="prenom" required placeholder="Votre prénom">
@@ -49,17 +47,17 @@
             <div class="form-group">
                 <label for="telephone">NUMÉRO DE TÉLÉPHONE <span class="required">*</span></label>
                 <div class="phone-input-group">
-                    <select class="country-code" name="indicatif">
-                        <option value="+243">🇨🇩 +243</option>
-                        <option value="+243">🇨🇩 +242</option>
-                        <option value="+243">🇨🇩 +224</option>
-                        <option value="+243">🇨🇩 +245</option>
-                        <option value="+243">🇨🇩 +225</option>
-                        <option value="+243">🇨🇩 +221</option>
-                        <option value="+243">🇨🇩 +236</option>
-                        <option value="+243">🇨🇩 +237</option>
-                        <option value="+33">🇫🇷 +33</option>
-                        <option value="+1">🇺🇸 +1</option>
+                    <select class="country-code" name="indicatif" id="indicatif">
+                        <option value="+243">🇨🇩 +243 (RDC)</option>
+                        <option value="+242">🇨🇬 +242 (Congo-Brazzaville)</option>
+                        <option value="+224">🇬🇳 +224 (Guinée)</option>
+                        <option value="+245">🇬🇼 +245 (Guinée-Bissau)</option>
+                        <option value="+225">🇨🇮 +225 (Côte d'Ivoire)</option>
+                        <option value="+221">🇸🇳 +221 (Sénégal)</option>
+                        <option value="+236">🇨🇫 +236 (RCA)</option>
+                        <option value="+237">🇨🇲 +237 (Cameroun)</option>
+                        <option value="+33">🇫🇷 +33 (France)</option>
+                        <option value="+1">🇺🇸 +1 (USA)</option>
                     </select>
                     <input type="tel" id="telephone" name="telephone" required placeholder="Votre numéro de téléphone">
                 </div>
@@ -76,27 +74,93 @@
 
             <div class="form-group">
                 <label for="ville">VILLE <span class="required">*</span></label>
-                <input type="text" id="ville" name="ville" required placeholder="Préciser la ville de résidence">
+                <select id="ville" name="ville" required>
+                    <option value="">Sélectionnez votre ville</option>
+                    <option value="Kinshasa">Kinshasa</option>
+                    <option value="Lubumbashi">Lubumbashi</option>
+                    <option value="Kolwezi">Kolwezi</option>
+                </select>
             </div>
 
             <div class="form-group">
-                <label class="radio-label">Êtes-vous propriétaire ou gérant d'une boutique, restaurant, pharmacie, école, hôpital ou autres activités ?</label>
+                <label class="radio-label">Êtes-vous propriétaire ou gérant d'une boutique, restaurant, pharmacie,
+                    école, hôpital ou autres activités ?</label>
                 <div class="radio-group">
-                    <label class="radio-option"><input type="radio" name="proprietaire" value="oui" required> OUI</label>
+                    <label class="radio-option"><input type="radio" name="proprietaire" value="oui" required>
+                        OUI</label>
                     <label class="radio-option"><input type="radio" name="proprietaire" value="non"> NON</label>
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="attente">QUESTION OU ATTENTE POUR LA SESSION</label>
-                <textarea id="attente" name="attente" rows="4" placeholder="Qu'espérez-vous apprendre lors de cette session ?"></textarea>
+                <textarea id="attente" name="attente" rows="4"
+                    placeholder="Qu'espérez-vous apprendre lors de cette session ?"></textarea>
             </div>
 
-            </div>
-
-            <button type="submit" class="btn-submit">Confirmer mon inscription</button>
+            <button type="submit" class="btn-submit" id="submit-btn">Confirmer mon inscription</button>
         </form>
     </main>
 
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyc93XFHDsHKNTfgNUmv26DL6gCwtNVpcRYqnHJBb5eTplrAcYE8QPQ2qABEBEAVxvTig/exec";
+
+        // 1. Récupérer automatiquement la date depuis le Google Sheet au chargement de la page
+        window.addEventListener('DOMContentLoaded', () => {
+            fetch(SCRIPT_URL)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.date) {
+                        document.getElementById('webinaire-date').innerText = data.date;
+                    } else {
+                        document.getElementById('webinaire-date').innerText = "Prochainement";
+                    }
+                })
+                .catch(error => {
+                    console.error("Erreur de chargement de la date:", error);
+                    document.getElementById('webinaire-date').innerText = "Prochainement";
+                });
+        });
+
+        // 2. Envoyer les données du formulaire vers le Google Sheet à la soumission
+        const form = document.getElementById('registration-form');
+        const submitBtn = document.getElementById('submit-btn');
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Inscription en cours...";
+
+            const formData = new FormData(form);
+            const urlEncodedData = new URLSearchParams(formData).toString();
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: urlEncodedData,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.result === 'success') {
+                        alert('Félicitations ! Votre inscription a bien été prise en compte.');
+                        form.reset();
+                    } else {
+                        alert('Une erreur est survenue lors de l\'inscription. Veuillez réessayer.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur lors de l\'envoi:', error);
+                    alert('Une erreur de connexion est survenue. Veuillez réessayer.');
+                })
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = "Confirmer mon inscription";
+                });
+        });
+    </script>
 </body>
+
 </html>
