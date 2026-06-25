@@ -103,10 +103,9 @@
     </main>
 
     <script>
-        // Ta nouvelle URL Google Apps Script injectée directement :
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz8p2VCeVwb_V4VZL0imMw7nJ6SsgZEeM2_gGiO6AuCbqti18Z1ma8-He2z_j4kP5g16g/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzxsk3img6EXrjdKR2vJ6V-l79239piW7uEba4_ScZn5thuWSKg_bkLN9uALavgcVqfmA/exec";
 
-        // 1. Récupérer automatiquement la date depuis le Google Sheet au chargement de la page
+        // 1. Récupérer automatiquement la date depuis le Google Sheet au chargement
         window.addEventListener('DOMContentLoaded', () => {
             fetch(SCRIPT_URL)
                 .then(response => response.json())

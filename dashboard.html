@@ -7,7 +7,6 @@
     <title>Espace Admin | FflexyPOS</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Styles spécifiques pour le tableau de bord */
         .admin-box {
             background: white;
             padding: 25px;
@@ -25,12 +24,20 @@
 
         .flex-group input {
             flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
 
         .flex-group button {
             width: auto;
             margin: 0;
             background-color: #0A192F;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
 
         .table-responsive {
@@ -104,8 +111,7 @@
                     class="text-gold">Chargement...</strong></p>
             <div class="flex-group">
                 <input type="text" id="new-date-input" placeholder="Ex: Samedi 11 Juillet 2026">
-                <button class="btn-submit" id="update-date-btn" onclick="updateWebinaireDate()">Mettre à jour la
-                    date</button>
+                <button id="update-date-btn" onclick="updateWebinaireDate()">Mettre à jour la date</button>
             </div>
         </div>
 
@@ -136,17 +142,17 @@
     </main>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz8p2VCeVwb_V4VZL0imMw7nJ6SsgZEeM2_gGiO6AuCbqti18Z1ma8-He2z_j4kP5g16g/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzxsk3img6EXrjdKR2vJ6V-l79239piW7uEba4_ScZn5thuWSKg_bkLN9uALavgcVqfmA/exec";
 
-        // Charger la date active et la liste des inscrits
         function loadDashboardData() {
             fetch(`${SCRIPT_URL}?action=getInscrits`)
                 .then(res => res.json())
                 .then(data => {
-                    // 1. Affiche la date en cours
+                    if (data.error) {
+                        alert("Erreur dans Google Sheets: " + data.error);
+                        return;
+                    }
                     document.getElementById('current-date').innerText = data.date;
-
-                    // 2. Remplit le tableau des inscrits
                     const tbody = document.getElementById('inscrits-table-body');
                     document.getElementById('count').innerText = data.inscrits.length;
 
@@ -157,9 +163,7 @@
 
                     tbody.innerHTML = "";
                     data.inscrits.forEach(user => {
-                        // Nettoyage du numéro pour faire un lien WhatsApp propre
                         let cleanPhone = user.telephone.replace(/[^0-9]/g, '');
-
                         let row = `<tr>
                             <td>${user.dateInsc}</td>
                             <td><strong>${user.prenom} ${user.nom}</strong></td>
@@ -174,34 +178,44 @@
                     });
                 })
                 .catch(err => {
-                    console.error("Erreur:", err);
-                    document.getElementById('inscrits-table-body').innerHTML = `<tr><td colspan="8" style="text-align:center; color:red;">Erreur lors du chargement des données.</td></tr>`;
+                    document.getElementById('inscrits-table-body').innerHTML = `<tr><td colspan="8" style="text-align:center; color:red;">Impossible de contacter Google Sheets. Vérifiez l'URL de l'API.</td></tr>`;
                 });
         }
 
-        // Fonction pour modifier la date dans la base de données
         function updateWebinaireDate() {
             const newDate = document.getElementById('new-date-input').value.trim();
-            if (!newDate) { alert("Veuillez écrire une date !"); return; }
+            if (!newDate) return alert("Veuillez écrire une date !");
 
             const btn = document.getElementById('update-date-btn');
             btn.disabled = true;
             btn.innerText = "Mise à jour...";
 
-            fetch(`${SCRIPT_URL}?action=updateDate&nouvelleDate=${encodeURIComponent(newDate)}`, { method: 'POST' })
-                .then(() => {
-                    alert("La date a été mise à jour avec succès !");
-                    document.getElementById('new-date-input').value = "";
-                    loadDashboardData(); // Recharge le tableau
+            const formData = new URLSearchParams();
+            formData.append("action", "updateDate");
+            formData.append("nouvelleDate", newDate);
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: formData.toString(),
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.result === "success") {
+                        alert("Date mise à jour !");
+                        document.getElementById('new-date-input').value = "";
+                        loadDashboardData();
+                    } else {
+                        alert("Erreur: " + data.error);
+                    }
                 })
-                .catch(err => alert("Erreur lors de la modification"))
+                .catch(() => alert("Erreur de connexion internet"))
                 .finally(() => {
                     btn.disabled = false;
                     btn.innerText = "Mettre à jour la date";
                 });
         }
 
-        // Charger les données dès que la page s'ouvre
         window.addEventListener('DOMContentLoaded', loadDashboardData);
     </script>
 </body>
