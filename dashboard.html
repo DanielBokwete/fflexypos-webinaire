@@ -99,7 +99,7 @@
         function populateFilterDropdown() {
             const filter = document.getElementById('date-filter');
             // Récupérer les dates uniques
-            const uniqueDates = [...new Set(toutesLesInscriptions.map(item => item.sessionDate))];
+            const uniqueDates = [...new Set(toutesLesInscriptions.map(item => item.sessionDate).filter(Boolean))];
             
             // On garde l'option "ALL" et on ajoute les dates existantes
             filter.innerHTML = '<option value="ALL">Afficher toutes les sessions</option>';

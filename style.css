@@ -5,6 +5,15 @@ body {
     margin: 0;
     padding: 0;
     color: #333;
+    /* Correction globale pour éviter que les éléments dépassent de l'écran */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html, body {
+    overflow-x: hidden; /* Empêche la page de bouger de gauche à droite sur mobile */
+    width: 100%;
+}
 }
 
 /* Section En-tête (Bleu foncé) */
