@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <template>
+      <style>
+      @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-latin.woff2") format("woff2"); font-weight: 400; }
+      @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-latin.woff2") format("woff2"); font-weight: 700; }
+        #root { position: absolute; inset: 0; font-family: "Inter", sans-serif; color: #ffffff; }
+        .perks-box { position: absolute; left: 64px; right: 64px; bottom: 420px; display: flex; flex-direction: column; gap: 22px; }
+        .perks-title { font-size: 44px; font-weight: 700; color: #facc15; margin-bottom: 6px; }
+        .perk { display: flex; align-items: center; gap: 24px; background: rgba(10,25,47,0.88);
+          border: 2px solid #d4af37; border-radius: 20px; padding: 22px 30px; }
+        .perk-dot { width: 52px; height: 52px; border-radius: 50%; background: #facc15; color: #0a192f;
+          font-size: 30px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .perk-text { font-size: 46px; font-weight: 700; }
+      </style>
+      <div id="root" data-composition-id="perks" data-width="1080" data-height="1920">
+        <div class="perks-box">
+          <div class="perks-title">Avec FflexyPOS :</div>
+          <div class="perk perk-1"><div class="perk-dot">1</div><div class="perk-text">Ventes encaissées en 1 clic</div></div>
+          <div class="perk perk-2"><div class="perk-dot">2</div><div class="perk-text">Stock suivi en temps réel</div></div>
+          <div class="perk perk-3"><div class="perk-dot">3</div><div class="perk-text">Rapports automatiques</div></div>
+        </div>
+      </div>
+      <script>
+        const tl = gsap.timeline({ paused: true });
+        tl.fromTo(".perks-title", { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.1);
+        tl.fromTo(".perk-1", { opacity: 0, x: -120 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, 0.35);
+        tl.fromTo(".perk-2", { opacity: 0, x: -120 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, 1.05);
+        tl.fromTo(".perk-3", { opacity: 0, x: -120 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, 1.75);
+        tl.to(".perks-box", { opacity: 0, y: 40, duration: 0.3, ease: "power2.in" }, 3.3);
+        window.__timelines["perks"] = tl;
+      </script>
+    </template>
+  </body>
+</html>

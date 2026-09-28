@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <template>
+      <style>
+      @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400-latin.woff2") format("woff2"); font-weight: 400; }
+      @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700-latin.woff2") format("woff2"); font-weight: 700; }
+        #root { position: absolute; inset: 0; font-family: "Inter", sans-serif; color: #ffffff; }
+        .hook-box { position: absolute; left: 64px; right: 64px; bottom: 440px; display: flex; flex-direction: column; gap: 18px; }
+        .hook-line { display: block; font-size: 88px; line-height: 1.05; font-weight: 700; letter-spacing: -2px; }
+        .hook-accent { align-self: flex-start; color: #0a192f; background: #facc15; padding: 6px 26px 14px; border-radius: 14px; }
+      </style>
+      <div id="root" data-composition-id="hook" data-width="1080" data-height="1920">
+        <div class="hook-box">
+          <span class="hook-line hook-l1">Votre caisse</span>
+          <span class="hook-line hook-l2">travaille-t-elle</span>
+          <span class="hook-line hook-accent hook-l3">pour vous ?</span>
+        </div>
+      </div>
+      <script>
+        const tl = gsap.timeline({ paused: true });
+        tl.fromTo(".hook-l1", { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 0.15);
+        tl.fromTo(".hook-l2", { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 0.45);
+        tl.fromTo(".hook-l3", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(2)" }, 0.8);
+        tl.to(".hook-box", { opacity: 0, y: -40, duration: 0.3, ease: "power2.in" }, 2.7);
+        window.__timelines["hook"] = tl;
+      </script>
+    </template>
+  </body>
+</html>
